@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PMC Estimate Submission</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    h2 {
+      color: #333;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 1em;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-right: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    #output {
+      margin-top: 1em;
+      padding: 10px;
+      background: #fff;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+  <h2>Submit Your Tasks to Google Sheet</h2>
+  <p>Add your tasks below. Fill in the Name, Best Case, Most Likely, and Worst Case estimates.</p>
+
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Best Case</th>
+        <th>Most Likely</th>
+        <th>Worst Case</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" value="UI Design" /></td>
+        <td><input type="number" value="12" /></td>
+        <td><input type="number" value="18" /></td>
+        <td><input type="number" value="25" /></td>
+      </tr>
+      <tr>
+        <td><input type="text" value="Testing & QA" /></td>
+        <td><input type="number" value="8" /></td>
+        <td><input type="number" value="12" /></td>
+        <td><input type="number" value="20" /></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button onclick="addRow()">➕ Add Another Task</button>
+  <button onclick="submitTasks()">✅ Submit Tasks to Google</button>
+
+  <div id="output"></div>
+
+  <script>
+    function addRow() {
+      const table = document.getElementById("taskTable").getElementsByTagName('tbody')[0];
+      const newRow = table.insertRow();
+      for (let i = 0; i < 4; i++) {
+        const cell = newRow.insertCell(i);
+        cell.innerHTML = '<input type="' + (i === 0 ? 'text' : 'number') + '" />';
+      }
+    }
+
+    function submitTasks() {
+      const rows = document.querySelectorAll("#taskTable tbody tr");
+      const tasks = [];
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("input");
+        const name = cells[0].value.trim();
+        const best = parseFloat(cells[1].value);
+        const most = parseFloat(cells[2].value);
+        const worst = parseFloat(cells[3].value);
+        if (name && !isNaN(best) && !isNaN(most) && !isNaN(worst)) {
+          tasks.push({
+            taskName: name,
+            bestCase: best,
+            mostLikely: most,
+            worstCase: worst
+          });
+        }
+      });
+
+      if (tasks.length === 0) {
+        document.getElementById("output").textContent = "❌ Please enter at least one valid task.";
+        return;
+      }
+
+      document.getElementById("output").textContent = "Submitting...";
+
+      fetch(
+        "https://script.google.com/macros/s/AKfycbwcpoFjhgVr7kEKi7kdwCIzR_hSOcLetF1jqh8xbaBE7WpFQyv5b1xWi9L4JdcPPHd7/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ tasks }),
+          credentials: "include"
+        }
+      )
+      .then(response => response.json())
+      .then(data => {
+        if (data.error) {
+          document.getElementById("output").textContent = "❌ " + data.error;
+        } else {
+          document.getElementById("output").innerHTML =
+            "✅ <b>Sheet Created!</b><br>" +
+            "🔗 <a href='" + data.sheetUrl + "' target='_blank'>Open Google Sheet</a><br>" +
+            "📊 <a href='" + data.webAppUrl + "' target='_blank'>Open Plot Viewer</a>";
+        }
+      })
+      .catch(err => {
+        document.getElementById("output").textContent = "❌ " + err.message;
+      });
+    }
+  </script>
+</body>
+</html>
+
