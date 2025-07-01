@@ -1,103 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>PMC Estimate Submission</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #f9f9f9;
-    }
-    h2 {
-      color: #333;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-bottom: 1em;
-      background: #fff;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-    }
-    th {
-      background: #f0f0f0;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      margin-right: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 4px;
-    }
-    #instructions {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin-bottom: 1em;
-    }
-  </style>
-</head>
 <body>
-  <h2>Submit Your Tasks to Google Sheet</h2>
-  <div id="instructions">
-    After you click **Submit**, you will be taken to a Google page to see your results.<br>
-    If it's your first time, you may be asked to **authorize access**.
-  </div>
-
-  <form action="https://script.google.com/macros/s/AKfycbwcpoFjhgVr7kEKi7kdwCIzR_hSOcLetF1jqh8xbaBE7WpFQyv5b1xWi9L4JdcPPHd7/exec" method="post" target="_blank">
-    <table id="taskTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Best Case</th>
-          <th>Most Likely</th>
-          <th>Worst Case</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><input name="tasks[0][taskName]" type="text" value="UI Design" required /></td>
-          <td><input name="tasks[0][bestCase]" type="number" value="12" required /></td>
-          <td><input name="tasks[0][mostLikely]" type="number" value="18" required /></td>
-          <td><input name="tasks[0][worstCase]" type="number" value="25" required /></td>
-        </tr>
-        <tr>
-          <td><input name="tasks[1][taskName]" type="text" value="Testing & QA" required /></td>
-          <td><input name="tasks[1][bestCase]" type="number" value="8" required /></td>
-          <td><input name="tasks[1][mostLikely]" type="number" value="12" required /></td>
-          <td><input name="tasks[1][worstCase]" type="number" value="20" required /></td>
-        </tr>
-      </tbody>
-    </table>
-
-    <button type="button" onclick="addRow()">➕ Add Another Task</button>
-    <button type="submit">✅ Submit Tasks to Google</button>
+  <h2>Submit Tasks to Google Sheet</h2>
+  <form method="POST"
+        action="https://script.google.com/macros/s/AKfycbwcpoFjhgVr7kEKi7kdwCIzR_hSOcLetF1jqh8xbaBE7WpFQyv5b1xWi9L4JdcPPHd7/exec"
+        target="_blank">
+    <label>Task Name:
+      <input name="tasks[0][taskName]" value="UI Design">
+    </label><br>
+    <label>Best Case:
+      <input name="tasks[0][bestCase]" value="12">
+    </label><br>
+    <label>Most Likely:
+      <input name="tasks[0][mostLikely]" value="18">
+    </label><br>
+    <label>Worst Case:
+      <input name="tasks[0][worstCase]" value="25">
+    </label><br>
+    <button type="submit">Submit</button>
   </form>
-
-  <script>
-    function addRow() {
-      const tbody = document.querySelector("#taskTable tbody");
-      const index = tbody.rows.length;
-      const row = tbody.insertRow();
-      const cells = [
-        `<input name="tasks[${index}][taskName]" type="text" required />`,
-        `<input name="tasks[${index}][bestCase]" type="number" required />`,
-        `<input name="tasks[${index}][mostLikely]" type="number" required />`,
-        `<input name="tasks[${index}][worstCase]" type="number" required />`
-      ];
-      cells.forEach(html => {
-        const cell = row.insertCell();
-        cell.innerHTML = html;
-      });
-    }
-  </script>
+  <p>✅ A new tab will open to authorize access. After confirming, you will see links to your Google Sheet and visualization.</p>
 </body>
 </html>
+
